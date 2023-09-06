@@ -1,0 +1,13 @@
+.header{
+    &__all {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .main-navigation {
+        ul {
+            display: flex;
+            justify-content: center;
+        }
+    }
+}
