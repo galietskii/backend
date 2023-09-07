@@ -1,0 +1,22 @@
+{
+  "name": "wordpress",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/galietskii/backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/galietskii/backend/issues"
+  },
+  "homepage": "https://github.com/galietskii/backend#readme",
+  "dependencies": {
+    "sass": "^1.66.1"
+  }
+}

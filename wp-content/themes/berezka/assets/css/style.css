@@ -4,14 +4,4 @@
   margin: 0 auto;
 }
 
-.header__all {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.header .main-navigation ul {
-  display: flex;
-  justify-content: center;
-}
-
 /*# sourceMappingURL=style.css.map */

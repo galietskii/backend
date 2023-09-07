@@ -102,6 +102,19 @@ function berezka_setup() {
 }
 add_action( 'after_setup_theme', 'berezka_setup' );
 
+// Add CLASS LOGO
+
+add_filter( 'get_custom_logo', 'change_logo_class' );
+
+
+function change_logo_class( $html ) {
+
+    $html = str_replace( 'custom-logo', 'header__logo-white', $html );
+    $html = str_replace( 'custom-logo-link', 'header__logo', $html );
+
+    return $html;
+}
+
 /**
  * Set the content width in pixels, based on the theme's design and stylesheet.
  *
@@ -138,16 +151,37 @@ add_action( 'widgets_init', 'berezka_widgets_init' );
  * Enqueue scripts and styles.
  */
 function berezka_scripts() {
-	wp_enqueue_style( 'berezka-style', get_stylesheet_uri(), array(), _S_VERSION );
-	wp_style_add_data( 'berezka-style', 'rtl', 'replace' );
-	wp_enqueue_style( 'style', get_template_directory_uri(). '/assets/css/style.css' );
-	wp_enqueue_script( 'berezka-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
+    // Подключение jQuery через Google CDN
+    wp_deregister_script('jquery');
+    wp_register_script( 'jquery', get_template_directory_uri() . '/assets/js/jquery-3.6.4.min.js', false, null, true );
+    wp_enqueue_script('jquery');
 
-	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
-		wp_enqueue_script( 'comment-reply' );
-	}
+    // Подключение стилей
+    wp_enqueue_style('berezka-style', get_stylesheet_uri(), array(), _S_VERSION);
+    wp_style_add_data('berezka-style', 'rtl', 'replace');
+
+    wp_enqueue_style('style-css', get_template_directory_uri() . '/assets/css/style.css', array(), '1.0.0');
+    wp_enqueue_style('critical-css', get_template_directory_uri() . '/assets/css/critical.css', array(), '1.0.0');
+    wp_enqueue_style('app-css', get_template_directory_uri() . '/assets/css/app.css', array(), '1.0.0');
+    wp_enqueue_style('fancybox-css', get_template_directory_uri() . '/assets/css/jquery.fancybox.min.css', array(), '1.0.0');
+
+    // Подключение скриптов
+    wp_enqueue_script('lottie', 'https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js', array(), '5.9.6', true);
+    wp_enqueue_script('inputmask', get_template_directory_uri() . '/assets/js/jquery.inputmask.min.js', array('jquery'), '1.0.0', true);
+    wp_enqueue_script('validate', get_template_directory_uri() . '/assets/js/jquery.validate.min.js', array('jquery'), '1.0.0', true);
+    wp_enqueue_script('additional-methods', get_template_directory_uri() . '/assets/js/additional-methods.min.js', array('jquery', 'validate'), '1.0.0', true);
+    wp_enqueue_script('fancybox', get_template_directory_uri() . '/assets/js/jquery.fancybox.min.js', array('jquery'), '1.0.0', true);
+    wp_enqueue_script('app-js', get_template_directory_uri() . '/assets/js/app.js', array('jquery'), '1.0.0', true);
+    wp_enqueue_script('form-js', get_template_directory_uri() . '/assets/js/form.js', array('jquery'), '1.0.0', true);
+    wp_enqueue_script('swiper', get_template_directory_uri() . '/assets/js/swiper.js', array('jquery'), '1.0.0', true);
+
+    // Если страница является синглом и комментарии открыты с поддержкой вложенных комментариев
+    if (is_singular() && comments_open() && get_option('thread_comments')) {
+        wp_enqueue_script('comment-reply');
+    }
 }
-add_action( 'wp_enqueue_scripts', 'berezka_scripts' );
+
+add_action('wp_enqueue_scripts', 'berezka_scripts');
 
 /**
  * Implement the Custom Header feature.
@@ -194,3 +228,97 @@ if( function_exists('acf_add_options_page') ) {
 
 
 }
+
+// CUSTOM CPT
+
+function create_application_post_type() {
+    register_post_type('applications',
+        array(
+            'labels' => array(
+                'name' => __('Applications'),
+                'singular_name' => __('Application'),
+            ),
+            'public' => false, 
+            'has_archive' => false,
+            'show_ui' => true,
+            'show_in_menu' => true,
+            'supports' => array('title'),
+        )
+    );
+	register_post_type( 'testimonials',
+    array(
+        'labels' => array(
+            'name' => ( 'Testimonials' ),
+            'singular_name' => ( 'Testimonial' ),
+            'all_items' => __( 'All Testimonials' ),
+        ),
+
+        'supports' => array(
+            'title',
+            'editor',
+            'thumbnail',
+            'revisions',
+            'custom-fields',
+			'classic-editor',
+        ),
+
+        'rewrite' => array('slug' => 'testimonials'),
+        'public' => true,
+        'has_archive' => true,
+        'hierarchical'        => false,
+        'show_ui'             => true,
+        'show_in_menu'        => true,
+        'show_in_nav_menus'   => true,
+        'show_in_admin_bar'   => true,
+        'menu_position'       => 5,
+        'menu_icon'           => 'dashicons-format-status',
+        'can_export'          => true,
+        'has_archive'         => true,
+        'exclude_from_search' => false,
+        'publicly_queryable'  => false,
+        'capability_type'     => 'post',
+        'show_in_rest' => true,
+
+    )
+);
+}
+add_action('init', 'create_application_post_type');
+
+
+
+// if ($_SERVER["REQUEST_METHOD"] == "POST") {
+//     $name = sanitize_text_field($_POST["name"]);
+//     $tel = sanitize_text_field($_POST["tel"]);
+//     $email = sanitize_email($_POST["email"]);
+//     $address = sanitize_text_field($_POST["address"]);
+//     $service = sanitize_text_field($_POST["service"]);
+//     $square = floatval($_POST["square"]);
+//     $bedrooms = intval($_POST["bedrooms"]);
+//     $bathrooms = intval($_POST["bathrooms"]);
+
+//     $post_id = wp_insert_post(array(
+//         'post_title' => 'New Application',
+//         'post_type' => 'applications', 
+//         'post_status' => 'publish', 
+//     ));
+
+//     update_post_meta($post_id, 'name', $name);
+//     update_post_meta($post_id, 'tel', $tel);
+//     update_post_meta($post_id, 'email', $email);
+//     update_post_meta($post_id, 'address', $address);
+//     update_post_meta($post_id, 'service', $service);
+//     update_post_meta($post_id, 'square', $square);
+//     update_post_meta($post_id, 'bedrooms', $bedrooms);
+//     update_post_meta($post_id, 'bathrooms', $bathrooms);
+
+//     $to = "	test@gmail.com"; 
+//     $subject = "Новая заявка от $name";
+//     $message = "Имя: $name\nТелефон: $tel\nEmail: $email\nАдрес: $address\nУслуга: $service\nПлощадь: $square\nСпальни: $bedrooms\nВанные комнаты: $bathrooms";
+
+//     wp_mail($to, $subject, $message);
+
+//     echo "Заявка успешно отправлена и сохранена!";
+// } else {
+//     echo "Ошибка: Неверный метод запроса!";
+// }
+?>
