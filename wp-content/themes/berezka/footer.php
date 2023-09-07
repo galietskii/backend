@@ -10,25 +10,38 @@
  */
 
 ?>
+<?php
+$logo_hover = get_field('logo_hover', 'options');
+$title = get_field('title', 'options');
+$contact = get_field('contact', 'options');
+$address = get_field('address', 'options');
+$link = get_field('link', 'options');
 
+?>
 <footer class="footer" id="contact">
         <div class="container">
           <div class="footer__container">
             <a href="" class="footer__logo header__logo">
-              <img src="/static/app/img/logo-hover.svg" class="header__logo-hover" alt="RaccoCleaning">
-              <img src="/static/app/img/logo-white.svg" alt="RaccoCleaning">
+              <img src="<?php echo esc_url($logo_hover['url']); ?>" class="header__logo-hover" alt="RaccoCleaning">
+              <?php the_custom_logo();?>
             </a>
             <div class="footer__block">
               <nav class="footer__nav">
-                <ul>
-                  <li><a href="#services">Our Services</a></li>
-                  <li><a href="#faq">FAQ</a></li>
-                </ul>
+              <?php
+					wp_nav_menu(
+						array(
+							'theme_location' => 'header-menu',
+							'menu_id'        => 'primary-menu',
+                            'items_wrap'     => '<ul id="%1$s" class="%2$s">%3$s</ul>',
+                            'menu_class'     => '',
+						)
+					);
+				?>
               </nav>
             </div>
             <div class="footer__block">
               <div class="footer__title">
-                <h2>Our in social media</h2>
+                <h2><?php echo $title; ?></h2>
               </div>
               <div class="socials">
                 <a href="">
@@ -50,10 +63,10 @@
             </div>
             <div class="footer__block">
               <div class="footer__title">
-                <h2>Contact</h2>
+                <h2><?php echo $contact; ?></h2>
               </div>
-              <address>Racon cleaning.<br> 1330 W Irving Park Rd, Bensenville IL</address>
-              <p class="developed-by">Development and support <a href="https://sheep.fish/en/" target="_blank">SheepFish</a></p>
+              <address><?php echo $address; ?></address>
+              <p class="developed-by">Development and support <a href="<?php echo $link['url'] ?>" target="_blank"><?php echo $link['title']; ?></a></p>
             </div>
           </div>
         </div>
